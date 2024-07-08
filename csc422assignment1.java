@@ -11,6 +11,8 @@ public class csc422assignment1 {
             System.out.println("\nWhat would you like to do?");
             System.out.println("1) View all pets");
             System.out.println("2) Add more pets");
+            System.out.println("3) Update an existing pet");
+            System.out.println("4) Remove an existing pet");
             System.out.println("5) Search pets by name");
             System.out.println("6) Search pets by age");
             System.out.println("7) Exit program");
@@ -20,6 +22,8 @@ public class csc422assignment1 {
             switch(userSelection) {
                 case 1: viewAllPets(petList); break;
                 case 2: petList.addAll(addNewPet()); break;
+                case 3: petList = updatePet(petList); break;
+                case 4: petList = removePet(petList); break;
                 case 5: searchPetByName(petList); break;
                 case 6: searchPetByAge(petList); break;
                 case 7: System.out.print("\nGoodbye!\n"); break;
@@ -78,6 +82,30 @@ public class csc422assignment1 {
         } while (newPetName.compareToIgnoreCase("done") != 0);
 
         return newPetList;
+    }
+    public static ArrayList<Pet> updatePet(ArrayList<Pet> pets) {  // Facilitates editing of pet objects
+        viewAllPets(pets);
+        System.out.print("Enter the pet ID you want to update: ");
+        Scanner petIdToUpdate = new Scanner(System.in);
+        int petId = Integer.parseInt(petIdToUpdate.next());
+        System.out.print("Enter new name and new age: ");
+        Scanner newPetData = new Scanner(System.in);
+        String newPetName = newPetData.next();
+        int newPetAge = Integer.parseInt(newPetData.next());
+        pets.set(petId, new Pet(newPetName,newPetAge));
+        pets.get(petId).setPetName(newPetName);
+        pets.get(petId).setPetAge(newPetAge);
+        return pets;
+    }
+    public static ArrayList<Pet> removePet(ArrayList<Pet> pets) {  // Displays all grid of pet objects and lets user
+        // choose which one to remove based on index number
+        viewAllPets(pets);
+        System.out.print("Enter the pet ID to remove: ");
+        Scanner petIdToRemove = new Scanner(System.in);
+        int petId = Integer.parseInt(petIdToRemove.next());
+        System.out.println(pets.get(petId).petName + " " + pets.get(petId).petAge + " is removed.");
+        pets.remove(petId);
+        return pets;
     }
     public static void searchPetByName(ArrayList<Pet> pets) {  // Searches list of pets by name and lists all of them
         // out in grid similar to viewAllPets
