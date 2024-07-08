@@ -11,6 +11,8 @@ public class csc422assignment1 {
             System.out.println("\nWhat would you like to do?");
             System.out.println("1) View all pets");
             System.out.println("2) Add more pets");
+            System.out.println("5) Search pets by name");
+            System.out.println("6) Search pets by age");
             System.out.println("7) Exit program");
             System.out.print("Your choice: ");
             Scanner input = new Scanner(System.in);
@@ -18,6 +20,8 @@ public class csc422assignment1 {
             switch(userSelection) {
                 case 1: viewAllPets(petList); break;
                 case 2: petList.addAll(addNewPet()); break;
+                case 5: searchPetByName(petList); break;
+                case 6: searchPetByAge(petList); break;
                 case 7: System.out.print("\nGoodbye!\n"); break;
                 default: System.out.print("Invalid selection, please choose between 1-7\n\n");
             }
@@ -75,5 +79,36 @@ public class csc422assignment1 {
 
         return newPetList;
     }
-
+    public static void searchPetByName(ArrayList<Pet> pets) {  // Searches list of pets by name and lists all of them
+        // out in grid similar to viewAllPets
+        System.out.print("\nEnter a name to search: ");
+        Scanner petName = new Scanner(System.in);
+        String petNameToSearch = petName.next();
+        int searchMatchCount = 0;
+        System.out.println("+----------------------+\n| ID | NAME      | AGE |\n+----------------------+");
+        for (int x = 0; x < pets.size(); x++) {
+            if (pets.get(x).getPetName().equalsIgnoreCase(petNameToSearch)) {
+                System.out.printf("|%3d |%10s |%4d |\n", x, pets.get(x).getPetName(), pets.get(x).getPetAge());
+                searchMatchCount++;
+            }
+        }
+        System.out.println("+----------------------+");
+        System.out.println(searchMatchCount + " pet name(s) match search term\n");
+    }
+    public static void searchPetByAge(ArrayList<Pet> pets) {  // Searches list of pets by age and lists all of them
+        // out in grid similar to viewAllPets
+        System.out.print("\nEnter age to search: ");
+        Scanner petName = new Scanner(System.in);
+        int petAgeToSearch = petName.nextInt();
+        int searchMatchCount = 0;
+        System.out.println("+----------------------+\n| ID | NAME      | AGE |\n+----------------------+");
+        for (int x = 0; x < pets.size(); x++) {
+            if (pets.get(x).getPetAge() == petAgeToSearch) {
+                System.out.printf("|%3d |%10s |%4d |\n", x, pets.get(x).getPetName(), pets.get(x).getPetAge());
+                searchMatchCount++;
+            }
+        }
+        System.out.println("+----------------------+");
+        System.out.println(searchMatchCount + " pet age(s) match search term\n");
+    }
 }
