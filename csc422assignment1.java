@@ -1,35 +1,76 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 public class csc422assignment1 {
-
-    public static void main(String[] args) {
-        System.out.println("Pet Database Program");
+    public static void main(String[] args) throws FileNotFoundException {
         int userSelection = 0;  // Control variable to determine what user wants to do and when to close the program
         ArrayList<Pet> petList = new ArrayList<>();  // ArrayList to store Pet objects
+        petList = loadDatabase(petList);
+        System.out.println("\n\nPet Database Program");
 
         do {  // Do while loop to continue presenting and executing menu selections until the user decides to exit
             System.out.println("\nWhat would you like to do?");
             System.out.println("1) View all pets");
             System.out.println("2) Add more pets");
-            System.out.println("3) Update an existing pet");
-            System.out.println("4) Remove an existing pet");
-            System.out.println("5) Search pets by name");
-            System.out.println("6) Search pets by age");
-            System.out.println("7) Exit program");
+            //System.out.println("3) Update an existing pet");
+            System.out.println("3) Remove an existing pet");
+            //System.out.println("5) Search pets by name");
+            //System.out.println("6) Search pets by age");
+            System.out.println("4) Exit program");
             System.out.print("Your choice: ");
             Scanner input = new Scanner(System.in);
             userSelection = input.nextInt();
             switch(userSelection) {
                 case 1: viewAllPets(petList); break;
                 case 2: petList.addAll(addNewPet()); break;
-                case 3: petList = updatePet(petList); break;
-                case 4: petList = removePet(petList); break;
-                case 5: searchPetByName(petList); break;
-                case 6: searchPetByAge(petList); break;
-                case 7: System.out.print("\nGoodbye!\n"); break;
+                //case 3: petList = updatePet(petList); break;
+                case 3: petList = removePet(petList); break;
+                //case 5: searchPetByName(petList); break;
+                //case 6: searchPetByAge(petList); break;
+                case 4: saveDatabase(petList); System.out.print("\nGoodbye!\n"); break;
                 default: System.out.print("Invalid selection, please choose between 1-7\n\n");
             }
-        } while(userSelection != 7);
+        } while(userSelection != 4);
+    }
+
+    /**
+     Checks for file named petDb.txt.  If petDb.txt exists, this will parse each line lines, and creates Pet objects.
+     If petDb.txt does not exist, a blank file is created.
+     */
+    public static ArrayList<Pet> loadDatabase(ArrayList<Pet> pets) throws FileNotFoundException {
+        try {
+            File dbFile = new File("petDb.txt");
+            if (dbFile.createNewFile()) {
+                System.out.println("File " + dbFile.getName() + " not found, creating a new file");
+            } else {
+                Scanner processDbInput = new Scanner(new File("petDb.txt"));  // Read petDb.txt file
+                while(processDbInput.hasNext()) {  // While loop to create pet objects and store them in pets ArrayList
+                    String currentPetName = processDbInput.next();
+                    int currentPetAge = processDbInput.nextInt();
+                    pets.add(new Pet(currentPetName, currentPetAge));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        return pets;
+    }
+    public static void saveDatabase(ArrayList<Pet> pets) {  // Writes each object in petList to petDb.txt file
+        try {
+            File dbFile = new File("petDb.txt");
+            FileWriter writer = new FileWriter(dbFile);
+            for (int x = 0; x < pets.size(); x++) {
+                writer.write(pets.get(x).getPetName() + " " + pets.get(x).getPetAge() + "\n");
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 
     static class Pet {  // Pet class with one constructor and related getters and setters for age and name operations
@@ -83,7 +124,7 @@ public class csc422assignment1 {
 
         return newPetList;
     }
-    public static ArrayList<Pet> updatePet(ArrayList<Pet> pets) {  // Facilitates editing of pet objects
+    /* public static ArrayList<Pet> updatePet(ArrayList<Pet> pets) {  // Facilitates editing of pet objects
         viewAllPets(pets);
         System.out.print("Enter the pet ID you want to update: ");
         Scanner petIdToUpdate = new Scanner(System.in);
@@ -96,7 +137,7 @@ public class csc422assignment1 {
         pets.get(petId).setPetName(newPetName);
         pets.get(petId).setPetAge(newPetAge);
         return pets;
-    }
+    } */
     public static ArrayList<Pet> removePet(ArrayList<Pet> pets) {  // Displays all grid of pet objects and lets user
         // choose which one to remove based on index number
         viewAllPets(pets);
@@ -107,7 +148,7 @@ public class csc422assignment1 {
         pets.remove(petId);
         return pets;
     }
-    public static void searchPetByName(ArrayList<Pet> pets) {  // Searches list of pets by name and lists all of them
+    /* public static void searchPetByName(ArrayList<Pet> pets) {  // Searches list of pets by name and lists all of them
         // out in grid similar to viewAllPets
         System.out.print("\nEnter a name to search: ");
         Scanner petName = new Scanner(System.in);
@@ -138,5 +179,5 @@ public class csc422assignment1 {
         }
         System.out.println("+----------------------+");
         System.out.println(searchMatchCount + " pet age(s) match search term\n");
-    }
+    } */
 }
