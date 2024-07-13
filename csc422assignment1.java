@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 public class csc422assignment1 {
     public static void main(String[] args) throws FileNotFoundException {
-        int userSelection = 0;  // Control variable to determine what user wants to do and when to close the program
+        int userSelection;  // Control variable to determine what user wants to do and when to close the program
         ArrayList<Pet> petList = new ArrayList<>();  // ArrayList to store Pet objects
         petList = loadDatabase(petList);
         System.out.println("\n\nPet Database Program");
@@ -25,7 +25,7 @@ public class csc422assignment1 {
             userSelection = input.nextInt();
             switch(userSelection) {
                 case 1: viewAllPets(petList); break;
-                case 2: petList.addAll(addNewPet()); break;
+                case 2: petList = addNewPet(petList); break;
                 //case 3: petList = updatePet(petList); break;
                 case 3: petList = removePet(petList); break;
                 //case 5: searchPetByName(petList); break;
@@ -103,26 +103,36 @@ public class csc422assignment1 {
         System.out.println("+----------------------+");
         System.out.println(pets.size() + " rows in set\n");
     }
-    public static ArrayList<Pet> addNewPet() {  // Allows for creation of new pet objects and sends them back to be
-        // added to original list
-        ArrayList<Pet> newPetList = new ArrayList<>();  // ArrayList to store newly added pets
+    public static ArrayList<Pet> addNewPet(ArrayList<Pet> pets) {  // Allows for creation of new pet objects and sends them back to be added to original list
         String newPetName;
-        int newPetAge;
+        int newPetAge = 0;
         int petCount = 0;
         do {
             System.out.print("\nadd pet (name, age): ");
-            Scanner newPetInput = new Scanner(System.in);
-            newPetName = newPetInput.next();
-            if (newPetName.contains("done")) {
+            Scanner userPetInput = new Scanner(System.in);
+            userPetInput.useDelimiter("\\n");  // change delimiter to line return
+            String newPetInfo = userPetInput.next();  // store user input as userInput variable
+            String[] newPetInfoArray = newPetInfo.split("\\s");  // Split user input into array with space as delimiter to count spaces and make each token accessible
+            newPetName = newPetInfoArray[0];  // Variable to store pet's name (first token in split array)
+
+            if (pets.size() > 4) { // Checks for amount of objects in database (max of 5)
+                System.out.println("Error: Database is full");
+                newPetName = "done";
+            } else if (newPetInfoArray.length == 1 && newPetInfoArray[0].contains("done")) {  // Checks if user is done adding pets
                 System.out.println(petCount + " pets added");
-            } else {
-                newPetAge = Integer.parseInt(newPetInput.next());
-                newPetList.add(new Pet(newPetName, newPetAge));
-                petCount++;
+            } else if (newPetInfoArray.length != 2) {  // Checks if user input containing more than two values
+                System.out.println("Error: " + newPetInfo + " is not valid input.");
+            } else {  // If database has room available, the user is not adding pets, and if they entered exactly 2 values then adds the pet to the ArrayList if the age chosen is valid
+                newPetAge = Integer.parseInt(newPetInfoArray[1]);
+                if (newPetAge > -1 && newPetAge < 21) {  // Checks pet age, must be between 0 - 20
+                    pets.add(new Pet(newPetName, newPetAge));
+                    petCount++;
+                } else {
+                    System.out.println("Error: " + newPetAge + " is not a valid age.");
+                }
             }
         } while (newPetName.compareToIgnoreCase("done") != 0);
-
-        return newPetList;
+        return pets;
     }
     /* public static ArrayList<Pet> updatePet(ArrayList<Pet> pets) {  // Facilitates editing of pet objects
         viewAllPets(pets);
@@ -139,13 +149,17 @@ public class csc422assignment1 {
         return pets;
     } */
     public static ArrayList<Pet> removePet(ArrayList<Pet> pets) {  // Displays all grid of pet objects and lets user
-        // choose which one to remove based on index number
+        // choose which one to remove based on index number.  If selection is invalid, an error is displayed and user is returned to main menu.
         viewAllPets(pets);
         System.out.print("Enter the pet ID to remove: ");
         Scanner petIdToRemove = new Scanner(System.in);
-        int petId = Integer.parseInt(petIdToRemove.next());
-        System.out.println(pets.get(petId).petName + " " + pets.get(petId).petAge + " is removed.");
-        pets.remove(petId);
+        int petId = petIdToRemove.nextInt();
+        if (petId > -1 && petId < pets.size()) {
+            System.out.println(pets.get(petId).petName + " " + pets.get(petId).petAge + " is removed.");
+            pets.remove(petId);
+        } else {
+            System.out.println("Error: ID " + petId + " does not exist.");
+        }
         return pets;
     }
     /* public static void searchPetByName(ArrayList<Pet> pets) {  // Searches list of pets by name and lists all of them
